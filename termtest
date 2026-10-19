@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Facilitating Learner-Centered Teaching — Comprehensive Exam (Lessons 5-13)</title>
+<style>
+:root{
+  --paper:#f4ecd8;
+  --paper2:#ece0c4;
+  --ink:#3b2a1a;
+  --ink-soft:#5c4630;
+  --rule:#c8b389;
+  --accent:#7a3b1e;
+  --accent2:#9c6b2e;
+  --good-bg:#d7ead0;
+  --good-bd:#5f8f4e;
+  --bad-bg:#f3d6d0;
+  --bad-bd:#a8402c;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper2);
+  color:var(--ink);
+  font-family:Georgia,'Iowan Old Style','Palatino Linotype',serif;
+  line-height:1.5;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px 60px;}
+.letterhead{
+  background:var(--paper);
+  border:1px solid var(--rule);
+  border-radius:2px;
+  padding:22px 24px;
+  margin-bottom:14px;
+  box-shadow:0 1px 0 var(--rule);
+}
+.letterhead h1{
+  font-size:1.35rem;
+  margin:0 0 4px;
+  color:var(--accent);
+  font-weight:700;
+  letter-spacing:.2px;
+}
+.letterhead p{margin:2px 0;color:var(--ink-soft);font-size:.92rem;}
+.rule{border:none;border-top:2px solid var(--accent2);margin:12px 0;}
+.name-line{margin-top:14px;font-size:.92rem;color:var(--ink-soft);}
+.name-line input{
+  border:none;border-bottom:1px solid var(--ink-soft);
+  background:transparent;font-family:inherit;font-size:.95rem;
+  color:var(--ink);padding:2px 4px;width:220px;
+}
+.progress{
+  display:flex;gap:4px;margin:10px 0 4px;flex-wrap:wrap;
+}
+.dot{
+  flex:1;min-width:18px;height:6px;background:var(--rule);border-radius:3px;
+}
+.dot.active{background:var(--accent);}
+.page{
+  background:var(--paper);
+  border:1px solid var(--rule);
+  border-radius:2px;
+  padding:22px 24px;
+  display:none;
+}
+.page.visible{display:block;}
+.section-title{
+  color:var(--accent);
+  font-size:1.05rem;
+  margin:0 0 2px;
+  font-weight:700;
+}
+.section-sub{color:var(--ink-soft);font-size:.85rem;margin:0 0 16px;font-style:italic;}
+.q{
+  margin-bottom:16px;
+  padding:12px 14px;
+  border:1px solid var(--rule);
+  border-radius:2px;
+  background:rgba(255,255,255,.35);
+}
+.q .num{font-weight:700;color:var(--accent);margin-right:6px;}
+.q .qtext{margin-bottom:8px;}
+.q input[type=text]{
+  width:100%;
+  padding:7px 8px;
+  border:1px solid var(--ink-soft);
+  border-radius:2px;
+  background:#fffdf7;
+  font-family:inherit;
+  font-size:.95rem;
+  color:var(--ink);
+}
+.opt{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:5px 6px;border-radius:2px;cursor:pointer;
+  font-size:.94rem;
+}
+.opt:hover{background:rgba(122,59,30,.06);}
+.opt input{margin-top:3px;}
+.nav{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:16px;gap:10px;
+}
+button{
+  font-family:inherit;
+  background:var(--accent);
+  color:#fbf3e2;
+  border:none;
+  padding:10px 18px;
+  border-radius:2px;
+  font-size:.92rem;
+  cursor:pointer;
+}
+button:disabled{opacity:.4;cursor:not-allowed;}
+button.secondary{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+button.submit{background:var(--accent2);}
+.pagecount{color:var(--ink-soft);font-size:.85rem;}
+.summary{
+  display:none;
+  background:var(--paper);
+  border:2px solid var(--accent);
+  border-radius:2px;
+  padding:20px 22px;
+  margin-bottom:16px;
+}
+.summary.visible{display:block;}
+.summary h2{margin:0 0 8px;color:var(--accent);font-size:1.15rem;}
+.summary .total{font-size:1.6rem;font-weight:700;color:var(--accent);}
+.breakdown{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;margin-top:12px;font-size:.9rem;}
+.breakdown div span{float:right;color:var(--ink-soft);}
+.answered.correct{background:var(--good-bg)!important;border-color:var(--good-bd)!important;}
+.answered.incorrect{background:var(--bad-bg)!important;border-color:var(--bad-bd)!important;}
+.correction{
+  margin-top:8px;font-size:.85rem;color:var(--accent);font-style:italic;display:none;
+}
+.correction.show{display:block;}
+.opt.correctopt{background:var(--good-bg);}
+.opt.incorrectopt{background:var(--bad-bg);}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#2a2116; --paper2:#1c1610; --ink:#ecdfc4; --ink-soft:#c6b28c;
+    --rule:#5a4a30; --accent:#e0a36b; --accent2:#d8bd7f;
+    --good-bg:#2e3e26; --good-bd:#6fae52; --bad-bg:#402620; --bad-bd:#c05c40;
+  }
+  input[type=text]{background:#241d13!important;color:#ecdfc4!important;}
+}
+:root[data-theme="dark"]{
+  --paper:#2a2116; --paper2:#1c1610; --ink:#ecdfc4; --ink-soft:#c6b28c;
+  --rule:#5a4a30; --accent:#e0a36b; --accent2:#d8bd7f;
+  --good-bg:#2e3e26; --good-bd:#6fae52; --bad-bg:#402620; --bad-bd:#c05c40;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="letterhead">
+    <h1>Facilitating Learner-Centered Teaching</h1>
+    <p>Comprehensive Examination — Modules 5 to 13</p>
+    <hr class="rule">
+    <div class="progress" id="progressDots"></div>
+  </div>
+
+  <div class="summary" id="summaryBox">
+    <h2>Exam Result</h2>
+    <div class="total" id="totalScore">0 / 0</div>
+    <div id="totalPct" style="color:var(--ink-soft);"></div>
+    <div class="breakdown" id="breakdown"></div>
+  </div>
+
+  <div id="pages"></div>
+
+  <div class="nav">
+    <button class="secondary" id="prevBtn">Previous Page</button>
+    <span class="pagecount" id="pageCount"></span>
+    <button id="nextBtn">Next Page</button>
+    <button class="submit" id="submitBtn" style="display:none;">Submit Full Exam</button>
+  </div>
+</div>
+
+<script>
+/* ---------- helpers ---------- */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function norm(s){return (s||"").toString().toLowerCase().trim().replace(/[^a-z0-9 ]/g,"").replace(/\s+/g," ");}
+
+/* ================= QUESTION BANKS ================= */
+
+/* ---- TEST I: IDENTIFICATION (clue -> term), free text ---- */
+const ID_BANK=[
+["The specific input channel (sight, sound, touch) a learner favors when taking in information.","sensory preference"],
+["Learner subtype interested in pictures, films, and graphic displays with strong picture memory.","visual iconic"],
+["Visual learner subtype who prefers formulae and written words over maps or images.","visual symbolic"],
+["Auditory subtype who processes information by discussing or whispering aloud.","talker"],
+["Auditory subtype who best remembers what is said to them.","listener"],
+["Spectrum describing thinking style from big-picture to step-by-step.","global analytic continuum"],
+["Sperry's model linking left hemisphere to logic and right hemisphere to creativity.","left brain right brain model"],
+["Gardner's theory that intelligence is not singular but plural.","multiple intelligences theory"],
+["MI type focused on rhythm, pitch, melody, and tone.","musical rhythmic"],
+["MI type focused on empathy and social leadership.","interpersonal"],
+["MI type focused on deep questions about life and existence.","existential"],
+["A disadvantage caused by a disability interacting with the environment.","handicap"],
+["Speech that names the person before the condition, e.g. 'a student with autism.'","people first language"],
+["Learning disability involving difficulty with math.","dyscalculia"],
+["Learning disability involving difficulty with writing.","dysgraphia"],
+["Learning disability involving difficulty with reading.","dyslexia"],
+["The presence of two or more different types of disability in one individual.","severe and multiple disabilities"],
+["Learning by linking or associating two stimuli, discovered by Pavlov.","classical conditioning"],
+["A stimulus that automatically produces a response without prior learning.","unconditioned stimulus"],
+["A previously neutral stimulus that comes to trigger a response after pairing.","conditioned stimulus"],
+["The gradual disappearance of a conditioned response when CS is presented without UCS.","extinction"],
+["The sudden reappearance of an extinguished response after a rest period.","spontaneous recovery"],
+["Thorndike's theory that learning forms stimulus-response bonds through trial and error.","connectionism"],
+["Thorndike's law stating learning is easiest when the learner is prepared and willing.","law of readiness"],
+["Thorndike's law stating repetition strengthens the S-R bond.","law of exercise"],
+["Thorndike's law stating satisfying results strengthen a bond, unpleasant results weaken it.","law of effect"],
+["Skinner's theory that behavior is shaped by its consequences.","operant conditioning"],
+["Reinforcing successive small improvements toward a target behavior.","shaping"],
+["Splitting a complex task into simple steps linked in sequence.","chaining"],
+["Tolman's theory that learning is goal-directed and cognitive.","purposive behaviorism"],
+["Mental representations of the environment that help a learner find their way to a goal.","cognitive maps"],
+["Learning that occurs and is retained but is not immediately shown in behavior.","latent learning"],
+["Bandura's theory that people learn through observation, imitation, and modeling.","social learning theory"],
+["The idea that person, behavior, and environment continuously influence one another.","reciprocal causation"],
+["The Gestalt law stating close objects are perceived as belonging together.","law of proximity"],
+["The Gestalt law stating the brain fills in missing parts of an image.","law of closure"],
+["The Gestalt law stating the brain separates a main object from its background.","law of figure ground"],
+["Kohler's concept that learning can occur suddenly through understanding.","insight learning"],
+["Lewin's idea that learning is shaped by inner and outer forces together.","life space"],
+["The stage where information is sensed, perceived, and attended to.","encoding"],
+["The stage where stored information is brought back when needed.","retrieval"],
+["The first memory store; very brief duration of one to three seconds.","sensory register"],
+["The gate that determines what information passes on to be remembered.","attention"],
+["Repeating information over and over to keep it active in short-term memory.","maintenance rehearsal"],
+["Forgetting that occurs when unattended information gradually fades over time.","decay"],
+["Forgetting that occurs when new or old information blocks access to a memory.","interference"],
+["The tendency to remember items at the beginning and end of a list better.","serial position effect"],
+["Gagne's principle that some skills require simpler prerequisite skills first.","learning hierarchies"],
+["Gagne's instructional event that captures interest at the start of a lesson.","gain attention"],
+["Gagne's instructional event that gives learners a chance to practice.","elicit performance"],
+["The quantity, clarity, and organization of a learner's present knowledge.","cognitive structure"],
+["Ausubel's term for the process by which new material relates to existing ideas.","subsumption"],
+["Introductory material presented before a lesson to connect it to prior knowledge.","advance organizer"],
+["An advance organizer that presents new information in story form.","narrative organizer"],
+["Bruner's view that learners actively construct new ideas from prior knowledge.","constructivism"],
+["The earliest stage of knowledge representation through actions on objects.","enactive representation"],
+["The stage of knowledge representation using images, pictures, and models.","iconic representation"],
+["Revisiting a topic repeatedly over time with increasing depth.","spiral curriculum"],
+["Approach where learners actively find answers through investigation with teacher guidance.","discovery learning"],
+["Bruner's concept that grouping information into categories underlies cognition.","categorization"]
+];
+
+/* ---- TEST II: MULTIPLE CHOICE ---- [question, [choices], correctAnswerText] */
+const MCQ_BANK=[
+["Who developed the theory of Multiple Intelligences?",["Roger Sperry","Howard Gardner","Jean Piaget","Jerome Bruner"],"Howard Gardner"],
+["According to Sperry's model, which hemisphere handles language, logic, and sequence?",["Right hemisphere","Left hemisphere","Cerebellum","Brain stem"],"Left hemisphere"],
+["A learner who struggles to sit still and learns best by doing is most likely:",["Visual","Auditory","Tactile/Kinesthetic","Global"],"Tactile/Kinesthetic"],
+["How many multiple intelligences did Gardner originally propose in this lesson?",["Five","Seven","Nine","Twelve"],"Nine"],
+["Which MI type is most associated with pilots, surgeons, and architects?",["Verbal-Linguistic","Visual-Spatial","Bodily-Kinesthetic","Naturalist"],"Visual-Spatial"],
+["Which term refers to a measurable impairment that exists within the individual?",["Handicap","Disability","Exceptionality","Accommodation"],"Disability"],
+["ADHD is best described as difficulty with:",["Speech production only","Attention, hyperactivity, and impulsivity","Muscle coordination","Hearing loss"],"Attention, hyperactivity, and impulsivity"],
+["Which condition is marked by repetitive behaviors and a strong need for routine?",["Autism","Dyslexia","ADHD","Dysgraphia"],"Autism"],
+["Which of these is considered an exceptionality even though it is not a difficulty?",["Dyscalculia","Giftedness","Emotional disorder","Neuromotor impairment"],"Giftedness"],
+["Cerebral palsy is an example of what category of exceptionality?",["Learning disability","Neuromotor impairment","Speech disorder","Sensory impairment"],"Neuromotor impairment"],
+["Who conducted the Little Albert experiment?",["Ivan Pavlov","John Watson","B.F. Skinner","Edward Thorndike"],"John Watson"],
+["In Pavlov's experiment, what does the bell represent before conditioning?",["Unconditioned stimulus","Conditioned stimulus","Neutral stimulus","Conditioned response"],"Neutral stimulus"],
+["Thorndike's experiments used which apparatus?",["Skinner Box","Puzzle Box","Maze","Mirror Box"],"Puzzle Box"],
+["Which law states that practice strengthens an S-R bond?",["Law of Readiness","Law of Exercise","Law of Effect","Law of Closure"],"Law of Exercise"],
+["Removing something unpleasant to increase a behavior is called:",["Positive reinforcement","Negative reinforcement","Positive punishment","Negative punishment"],"Negative reinforcement"],
+["Taking away a phone to decrease behavior is an example of:",["Positive reinforcement","Negative reinforcement","Positive punishment","Negative punishment"],"Negative punishment"],
+["Which theorist used the Skinner Box with rats pressing a lever for food?",["Pavlov","Watson","Skinner","Thorndike"],"Skinner"],
+["Which of these is a voluntary behavior best explained by operant conditioning?",["Salivating at food","Pressing a lever for a reward","Blinking at a puff of air","Flinching at a loud noise"],"Pressing a lever for a reward"],
+["Neo-behaviorism can best be described as:",["A rejection of all cognitive processes","A bridge between behaviorism and cognitive theory","A purely physiological theory","A theory only about animals"],"A bridge between behaviorism and cognitive theory"],
+["Tolman's theory of learning is also known as:",["Social Learning Theory","Purposive Behaviorism","Connectionism","Constructivism"],"Purposive Behaviorism"],
+["Which concept did Tolman use to describe mental representations of the environment?",["Cognitive maps","Life space","Schema","Advance organizers"],"Cognitive maps"],
+["Latent learning can occur:",["Only with reinforcement","Without reinforcement or immediate behavior change","Only through direct experience","Only in animals"],"Without reinforcement or immediate behavior change"],
+["Who proposed Social Learning Theory?",["Albert Bandura","Edward Tolman","Kurt Lewin","Wolfgang Kohler"],"Albert Bandura"],
+["Which is NOT one of Bandura's four conditions for modeling?",["Attention","Retention","Motor Reproduction","Reinforcement Schedule"],"Reinforcement Schedule"],
+["The idea that person, behavior, and environment shape one another is called:",["Reciprocal causation","Life space","Subsumption","Categorization"],"Reciprocal causation"],
+["Gestalt psychology's central idea is best summarized as:",["The whole is different from the sum of its parts","Learning is purely behavioral","Intelligence is fixed at birth","Memory has only one store"],"The whole is different from the sum of its parts"],
+["Color-coding all vocabulary words the same color demonstrates which Gestalt law?",["Proximity","Similarity","Closure","Figure/Ground"],"Similarity"],
+["Students guessing that 'TEAC_' completes to 'TEACH' illustrates:",["Law of Closure","Law of Proximity","Law of Pragnanz","Law of Figure/Ground"],"Law of Closure"],
+["Who introduced the concept of insight learning?",["Max Wertheimer","Wolfgang Kohler","Kurt Lewin","George Miller"],"Wolfgang Kohler"],
+["Kurt Lewin's 'life space' concept emphasizes:",["Only internal motivation","Only external environment","Both internal and external forces together","Only teacher behavior"],"Both internal and external forces together"],
+["Information Processing Theory compares the mind to:",["A muscle","A computer-like system","A sponge","A mirror"],"A computer-like system"],
+["Knowing HOW to do something, like solving an equation, is called:",["Declarative knowledge","Procedural knowledge","Episodic knowledge","Conditional knowledge"],"Procedural knowledge"],
+["Knowing WHEN and WHY to use a strategy is:",["Declarative knowledge","Procedural knowledge","Conditional knowledge","Episodic knowledge"],"Conditional knowledge"],
+["Short-term/working memory can typically hold:",["1 to 2 items","7 plus or minus 2 chunks","Unlimited items","20 or more items"],"7 plus or minus 2 chunks"],
+["Which memory store has unlimited capacity and indefinite duration?",["Sensory Register","Short-Term Memory","Long-Term Memory","Echoic Memory"],"Long-Term Memory"],
+["Forgetting caused by competing memories blocking access is called:",["Decay","Interference","Extinction","Closure"],"Interference"],
+["Remembering items at the start and end of a list better than the middle is the:",["Serial Position Effect","Primacy Bias","Law of Pragnanz","Spacing Effect"],"Serial Position Effect"],
+["Spreading study sessions out over time instead of cramming is called:",["Massed practice","Distributed practice","Maintenance rehearsal","Part learning"],"Distributed practice"],
+["Who proposed the Conditions of Learning and Nine Events of Instruction?",["Robert Gagne","David Ausubel","Jerome Bruner","George Miller"],"Robert Gagne"],
+["Which learning outcome involves controlling and guiding one's own thinking?",["Verbal Information","Cognitive Strategies","Motor Skills","Attitudes"],"Cognitive Strategies"],
+["Which of Gagne's Nine Events involves activating prior knowledge?",["Gain Attention","Stimulate Recall of Prior Learning","Present the Stimulus","Assess Performance"],"Stimulate Recall of Prior Learning"],
+["Effective feedback, per Gagne's Event 7, should be:",["Vague and general","Clear, timely, specific, and constructive","Delayed until the final exam","Given only for correct answers"],"Clear, timely, specific, and constructive"],
+["Ausubel's theory centers on the importance of the learner's:",["Reinforcement schedule","Cognitive structure","Sensory register","Motor skills"],"Cognitive structure"],
+["Learning about a blue jay after already knowing 'bird' is an example of:",["Derivative subsumption","Correlative subsumption","Superordinate learning","Combinatorial learning"],"Derivative subsumption"],
+["Learning that an ostrich is a bird that cannot fly, expanding the concept of 'bird,' is:",["Derivative subsumption","Correlative subsumption","Superordinate learning","Combinatorial learning"],"Correlative subsumption"],
+["Knowing dogs, cats, and birds individually, then learning the concept 'animal,' is:",["Derivative subsumption","Correlative subsumption","Superordinate learning","Combinatorial learning"],"Superordinate learning"],
+["Advance organizers should be presented:",["After the lesson","During the assessment","Before new material","Only for gifted learners"],"Before new material"],
+["Who proposed the three modes of representation: enactive, iconic, symbolic?",["Jerome Bruner","David Ausubel","Robert Gagne","Jean Piaget"],"Jerome Bruner"],
+["A child learning addition using actual blocks is an example of:",["Enactive representation","Iconic representation","Symbolic representation","Correlative subsumption"],"Enactive representation"],
+["Solving addition using written numbers and equations demonstrates:",["Enactive representation","Iconic representation","Symbolic representation","Superordinate learning"],"Symbolic representation"],
+["The Philippine K-12 curriculum's spiral approach is mandated under:",["RA 10533","RA 9155","RA 10175","RA 7836"],"RA 10533"],
+["In discovery learning, the teacher's role is to:",["Give answers directly","Guide while learners investigate","Avoid all involvement","Test only through lecture"],"Guide while learners investigate"],
+["Bruner believed the best motivator for learning is:",["External grades","Interest in the subject itself","Fear of punishment","Peer comparison"],"Interest in the subject itself"],
+["Which categorization rule refers to some characteristics mattering more than others?",["Criterial Attributes","Combining Attributes","Assigning Weight","Acceptance Limits"],"Assigning Weight"],
+["Which best distinguishes classical from operant conditioning?",["Classical involves voluntary behavior, operant involves reflexes","Classical links stimuli, operant links behavior to consequences","Classical was developed by Skinner","Operant was developed by Pavlov"],"Classical links stimuli, operant links behavior to consequences"],
+["A teacher using a simple, uncluttered diagram instead of a busy one applies:",["Law of Pragnanz","Law of Proximity","Law of Similarity","Insight Learning"],"Law of Pragnanz"],
+["Bandura's modeling condition requiring the learner to physically perform the behavior is:",["Attention","Retention","Motor Reproduction","Motivation"],"Motor Reproduction"],
+["Which knowledge type involves memories tied to personal experience?",["Declarative","Procedural","Episodic","Conditional"],"Episodic"],
+["Punishment, unlike reinforcement, primarily teaches:",["The correct behavior to perform","What not to do","New cognitive maps","Advance organizers"],"What not to do"],
+["Which theorist's laws include Readiness, Exercise, and Effect?",["Thorndike","Pavlov","Skinner","Watson"],"Thorndike"],
+["Attention in Information Processing Theory functions as:",["A permanent storage house","A gate determining what is remembered","A type of punishment","A Gestalt law"],"A gate determining what is remembered"]
+];
+
+/* ---- TEST III: FILL IN THE BLANK (sentence, answer) free text ---- */
+const FIB_BANK=[
+["According to _____, the left hemisphere handles language, logic, and sequential processing.","sperry"],
+["Gardner's book proposing Multiple Intelligences, published in 1983, is titled Frames of _____.","mind"],
+["A student who prefers abstract symbols like formulae over maps is a visual-_____ learner.","symbolic"],
+["_____ language names the person before the condition, such as 'a child with autism.'","people first"],
+["In Pavlov's experiment, salivation to food alone (before conditioning) is the _____ response.","unconditioned"],
+["Watson's experiment paired a white rat with a loud noise to condition fear in _____.","little albert"],
+["Thorndike's puzzle box experiments used hungry _____ learning to escape.","cats"],
+["_____ reinforcement increases behavior by removing something unpleasant.","negative"],
+["Skinner's apparatus in which a rat presses a lever for food is called the Skinner _____.","box"],
+["Tolman's theory is also called _____ behaviorism because learning is goal-directed.","purposive"],
+["Bandura's theory explains learning through observation, imitation, and _____.","modeling"],
+["The Gestalt law stating the brain prefers simple, organized patterns is the Law of Good _____.","pragnanz"],
+["_____ learning, proposed by Kohler, happens suddenly without reward or repeated practice.","insight"],
+["Lewin's concept describing internal and external forces shaping learning is called _____ space.","life"],
+["Information Processing Theory was proposed by George _____ in 1956.","miller"],
+["The sensory register holds information for about 1 to _____ seconds.","3"],
+["Short-term memory can hold about 7 plus or minus _____ chunks of information.","2"],
+["_____ memory has unlimited capacity and indefinite duration.","long term"],
+["Forgetting due to fading of unattended information over time is called _____.","decay"],
+["The tendency to recall the beginning and end of a list better is the serial _____ effect.","position"],
+["Gagne's theory is called the Conditions of _____.","learning"],
+["Gagne proposed _____ events of instruction.","nine"],
+["The first of Gagne's nine events is to gain _____.","attention"],
+["Ausubel's process of relating new material to existing ideas is called _____.","subsumption"],
+["A(n) _____ organizer is presented before new material to connect it with prior knowledge.","advance"],
+["An advance organizer that presents information in story form is called a _____ organizer.","narrative"],
+["Bruner's theory of learning is rooted in _____, the idea that learners build new understanding actively.","constructivism"],
+["Bruner's second stage of representation, using pictures and models, is called _____ representation.","iconic"],
+["The _____ curriculum revisits topics repeatedly with increasing depth.","spiral"],
+["Bruner believed interest in the subject is a better motivator than external _____.","rewards"]
+];
+
+/* ---- TEST IV: ENUMERATION (select-all style) ---- [prompt, [options...], [correct subset...]] */
+const ENUM_BANK=[
+["Select the THREE sensory learning styles.",["Visual","Auditory","Tactile/Kinesthetic","Existential","Interpersonal"],["Visual","Auditory","Tactile/Kinesthetic"]],
+["Select the traits associated with the LEFT brain (analytic) style.",["Verbal, responds to word meaning","Sequential processing","Responds to logic","Random/simultaneous processing","Responds to emotion"],["Verbal, responds to word meaning","Sequential processing","Responds to logic"]],
+["Select Gardner's Multiple Intelligences.",["Visual-Spatial","Mathematical-Logical","Naturalist","Analytic-Sequential","Bodily-Kinesthetic"],["Visual-Spatial","Mathematical-Logical","Naturalist","Bodily-Kinesthetic"]],
+["Select the THREE broad categories of exceptionalities.",["Cognitive/Academic","Social-Emotional-Behavioral","Physical/Health","Sensory-Motor Only","Verbal-Linguistic"],["Cognitive/Academic","Social-Emotional-Behavioral","Physical/Health"]],
+["Select examples of learning disabilities.",["Dyslexia","Dyscalculia","Dysgraphia","Autism","Cerebral Palsy"],["Dyslexia","Dyscalculia","Dysgraphia"]],
+["Select Pavlov's classical conditioning components.",["Unconditioned Stimulus","Conditioned Response","Neutral Stimulus","Shaping","Chaining"],["Unconditioned Stimulus","Conditioned Response","Neutral Stimulus"]],
+["Select Thorndike's THREE Primary Laws.",["Law of Readiness","Law of Exercise","Law of Effect","Law of Closure","Law of Proximity"],["Law of Readiness","Law of Exercise","Law of Effect"]],
+["Select the types of reinforcement and punishment.",["Positive Reinforcement","Negative Reinforcement","Positive Punishment","Negative Punishment","Neutral Stimulus"],["Positive Reinforcement","Negative Reinforcement","Positive Punishment","Negative Punishment"]],
+["Select Bandura's FOUR conditions for effective modeling.",["Attention","Retention","Motor Reproduction","Motivation","Reinforcement"],["Attention","Retention","Motor Reproduction","Motivation"]],
+["Select the Gestalt Laws of Perception.",["Proximity","Similarity","Closure","Good Continuation","Operant Conditioning"],["Proximity","Similarity","Closure","Good Continuation"]],
+["Select the types of knowledge described in Information Processing Theory.",["Declarative","Procedural","Conditional","Episodic","Correlative"],["Declarative","Procedural","Conditional","Episodic"]],
+["Select the THREE memory stores.",["Sensory Register","Short-Term/Working Memory","Long-Term Memory","Cognitive Structure","Life Space"],["Sensory Register","Short-Term/Working Memory","Long-Term Memory"]],
+["Select methods for increasing retrieval.",["Rehearsal/Elaboration","Distributed Practice","Mnemonic Aids","Extinction","Spontaneous Recovery"],["Rehearsal/Elaboration","Distributed Practice","Mnemonic Aids"]],
+["Select Gagne's FIVE categories of learning outcomes.",["Verbal Information","Intellectual Skills","Cognitive Strategies","Attitudes","Motor Skills"],["Verbal Information","Intellectual Skills","Cognitive Strategies","Attitudes","Motor Skills"]],
+["Select Ausubel's FOUR processes of meaningful learning (subsumption types).",["Derivative Subsumption","Correlative Subsumption","Superordinate Learning","Combinatorial Learning","Latent Learning"],["Derivative Subsumption","Correlative Subsumption","Superordinate Learning","Combinatorial Learning"]],
+["Select the types of advance organizers.",["Expository","Narrative","Skimming","Graphic Organizer","Reciprocal"],["Expository","Narrative","Skimming","Graphic Organizer"]],
+["Select Bruner's THREE modes of representation.",["Enactive","Iconic","Symbolic","Correlative","Superordinate"],["Enactive","Iconic","Symbolic"]],
+["Select Bruner's FOUR rules of categorization.",["Criterial Attributes","Combining Attributes","Assigning Weight","Acceptance Limits","Motor Reproduction"],["Criterial Attributes","Combining Attributes","Assigning Weight","Acceptance Limits"]],
+["Select the FOUR aspects of Bruner's Theory of Instruction.",["Predisposition to Learn","Structure of Knowledge","Effective Sequencing","Reinforcement","Motor Reproduction"],["Predisposition to Learn","Structure of Knowledge","Effective Sequencing","Reinforcement"]],
+["Select Gagne's Nine Events that come BEFORE 'Present the Stimulus'.",["Gain Attention","Inform Learners of Objectives","Stimulate Recall of Prior Learning","Elicit Performance","Assess Performance"],["Gain Attention","Inform Learners of Objectives","Stimulate Recall of Prior Learning"]]
+];
+
+/* ---- TEST V: ACRONYMS (MCQ style: acronym -> meaning) ---- */
+const ACR_BANK=[
+["ADHD",["Attention-Deficit Hyperactivity Disorder","Advanced Development Hyperactivity Disability","Auditory Discrimination Hearing Disorder","Attention Delay Hyperactive Diagnosis"],"Attention-Deficit Hyperactivity Disorder"],
+["MI (Gardner's theory)",["Mental Intelligence","Multiple Intelligences","Memory Index","Motor Integration"],"Multiple Intelligences"],
+["UCS",["Unconditioned Stimulus","Unified Cognitive System","Unlearned Conditioned Sensation","Universal Conditioning Scale"],"Unconditioned Stimulus"],
+["UCR",["Unconditioned Response","Unified Conditioning Rule","Unlearned Cognitive Reaction","Universal Conditioned Reflex"],"Unconditioned Response"],
+["CS",["Conditioned Stimulus","Cognitive Structure","Classical Sequence","Combined Stimulus"],"Conditioned Stimulus"],
+["CR",["Conditioned Response","Cognitive Retrieval","Combined Reinforcement","Classical Reflex"],"Conditioned Response"],
+["NS",["Neutral Stimulus","Natural Sequence","Negative Stimulus","New Stimulus"],"Neutral Stimulus"],
+["S-R (Thorndike/Connectionism)",["Stimulus-Response","Sensory-Retrieval","Structure-Reinforcement","Symbolic-Representation"],"Stimulus-Response"],
+["IPT",["Information Processing Theory","Instructional Practice Theory","Intellectual Processing Test","Interpersonal Perception Theory"],"Information Processing Theory"],
+["STM",["Short-Term Memory","Structured Task Model","Sensory Transfer Mechanism","Symbolic Thought Mapping"],"Short-Term Memory"],
+["LTM",["Long-Term Memory","Latent Task Motivation","Learning Transfer Method","Life-Time Memory-index"],"Long-Term Memory"],
+["K-12 (spiral curriculum, Philippines)",["Kindergarten to Grade 12","Knowledge for 12 subjects","Key Stage 12","Kinesthetic 12-step model"],"Kindergarten to Grade 12"],
+["RA 10533",["The law mandating the Philippine K-12 spiral curriculum","The law on special education funding","The law on teacher licensure","The law on child protection in schools"],"The law mandating the Philippine K-12 spiral curriculum"]
+];
+
+/* ---- TEST VI: ISMS OF EDUCATION ---- */
+/* identification: clue -> ism name (free text) */
+const ISM_ID_BANK=[
+["This -ism holds that education should focus on core knowledge, discipline, and teacher authority, with basics like the 3Rs.","essentialism"],
+["This -ism emphasizes universal truths, great books, and timeless ideas that develop rational thinking.","perennialism"],
+["This -ism holds that education should be student-centered, experiential, and connected to real life through learning by doing.","progressivism"],
+["This -ism holds that knowledge is validated by its usefulness and practicality.","pragmatism"],
+["This -ism holds that reality lies in the mind and ideas, with education focused on virtues, values, and truth.","idealism"],
+["This -ism holds that reality is based on the physical world, emphasizing facts and sensory experience.","realism"],
+["This -ism holds that all knowledge comes from sensory experience and observation.","empiricism"],
+["This -ism emphasizes reason as the main source of knowledge, with ideas that must be logically justified.","rationalism"],
+["This -ism emphasizes individual choice, personal responsibility, and authentic living.","existentialism"],
+["This -ism holds that learners actively build knowledge through interaction, experience, and scaffolding.","constructivism"],
+["This -ism holds that learning is a change in behavior caused by stimulus-response and reinforcement.","behaviorism"],
+["This -ism holds that learning is a process of mental encoding, processing, and storing information.","cognitivism"],
+["William Bagley is known as the Father of this -ism.","essentialism"],
+["John Dewey is known as the Father of this movement centered on experiential, real-life learning.","progressivism"],
+["Plato is known as the Father of this -ism.","idealism"],
+["Aristotle is known as the Father of this -ism.","realism"],
+["Francis Bacon is known as the Father of this -ism.","empiricism"],
+["Rene Descartes is known as the Father of this -ism.","rationalism"],
+["Soren Kierkegaard is known as the Father of this -ism.","existentialism"],
+["John B. Watson is known as the Father of this -ism.","behaviorism"],
+["Charles Peirce is credited as the originator of the term describing this -ism.","pragmatism"],
+["William James is known for popularizing this -ism.","pragmatism"],
+["John Dewey applied this -ism through what is called Instrumentalism.","pragmatism"],
+["Jean Piaget is a pioneer of the cognitive branch of this -ism, alongside Vygotsky's social branch.","constructivism"],
+["Jerome Bruner and Robert Gagne, along with Piaget, are pioneers of this -ism.","cognitivism"]
+];
+/* mcq: [question, [choices], correctAnswerText] */
+const ISM_MCQ_BANK=[
+["Who are the pioneers of Perennialism?",["Robert Hutchins & Mortimer Adler","William Bagley","John Dewey","Charles Peirce"],"Robert Hutchins & Mortimer Adler"],
+["'Teacher gives regular drills in grammar, spelling, and arithmetic to ensure mastery of basics' illustrates:",["Essentialism","Perennialism","Progressivism","Pragmatism"],"Essentialism"],
+["'Students analyze Shakespeare to discuss eternal themes like justice and love' illustrates:",["Perennialism","Realism","Empiricism","Behaviorism"],"Perennialism"],
+["'Learners conduct a community survey on waste disposal and create a proposal for improvement' illustrates:",["Progressivism","Idealism","Rationalism","Cognitivism"],"Progressivism"],
+["'Students test different materials for insulation and present results to solve a classroom heating issue' illustrates:",["Pragmatism","Essentialism","Existentialism","Constructivism"],"Pragmatism"],
+["'Teacher facilitates a debate on the concept of justice based on moral reasoning' illustrates:",["Idealism","Realism","Empiricism","Behaviorism"],"Idealism"],
+["'Students measure shadows during different times of day to understand Earth's rotation' illustrates:",["Realism","Idealism","Existentialism","Perennialism"],"Realism"],
+["'Learners observe seed germination daily and record changes over time' illustrates:",["Empiricism","Rationalism","Cognitivism","Pragmatism"],"Empiricism"],
+["'Students derive formulas through reasoning and prove them through logic' illustrates:",["Rationalism","Empiricism","Realism","Progressivism"],"Rationalism"],
+["'Teacher allows students to select project topics based on their passions and values' illustrates:",["Existentialism","Essentialism","Behaviorism","Idealism"],"Existentialism"],
+["'A teacher gives students recycled materials to build their own electric circuits' illustrates:",["Constructivism","Realism","Pragmatism","Perennialism"],"Constructivism"],
+["'Teacher uses a point system to reward punctual assignment submission' illustrates:",["Behaviorism","Cognitivism","Idealism","Existentialism"],"Behaviorism"],
+["'Students organize facts into a concept map to connect ideas about ecosystems' illustrates:",["Cognitivism","Behaviorism","Empiricism","Rationalism"],"Cognitivism"],
+["Which -ism's core idea could be summarized as 'learn by doing'?",["Progressivism","Essentialism","Perennialism","Idealism"],"Progressivism"],
+["Which -ism is associated with the '3Rs' (read, 'riting, 'rithmetic)?",["Essentialism","Perennialism","Progressivism","Existentialism"],"Essentialism"],
+["Constructivism has two branches. Who represents the Social branch?",["Lev Vygotsky","Jean Piaget","Jerome Bruner","Robert Gagne"],"Lev Vygotsky"],
+["Constructivism has two branches. Who represents the Cognitive branch?",["Jean Piaget","Lev Vygotsky","John Dewey","John B. Watson"],"Jean Piaget"],
+["Which -ism holds that education should develop rational thinking through the study of 'great books'?",["Perennialism","Progressivism","Pragmatism","Behaviorism"],"Perennialism"],
+["Which -ism emphasizes flexibility, practicality, and problem-solving through experience?",["Pragmatism","Idealism","Rationalism","Essentialism"],"Pragmatism"],
+["Which -ism is centered on 'authentic living' and personal responsibility?",["Existentialism","Realism","Empiricism","Cognitivism"],"Existentialism"],
+["Which philosopher is the Father of Idealism?",["Plato","Aristotle","Descartes","Bacon"],"Plato"],
+["Which philosopher is the Father of Realism?",["Aristotle","Plato","Kierkegaard","Peirce"],"Aristotle"],
+["Which philosopher is the Father of Empiricism?",["Francis Bacon","Rene Descartes","John Dewey","William James"],"Francis Bacon"],
+["Which philosopher is the Father of Rationalism?",["Rene Descartes","Francis Bacon","Plato","Aristotle"],"Rene Descartes"],
+["Which three theorists are credited as pioneers of Cognitivism?",["Jean Piaget, Jerome Bruner, and Robert Gagne","John Dewey, Charles Peirce, and William James","Watson, Skinner, and Thorndike","Bagley, Hutchins, and Adler"],"Jean Piaget, Jerome Bruner, and Robert Gagne"]
+];
+
+/* ================= APP STATE ================= */
+const state={
+  id: shuffle(ID_BANK.slice()),
+  mcq: shuffle(MCQ_BANK.slice()).map(item=>({q:item[0],choices:shuffle(item[1].slice()),answer:item[2]})),
+  fib: shuffle(FIB_BANK.slice()),
+  enum: shuffle(ENUM_BANK.slice()).map(item=>({q:item[0],options:shuffle(item[1].slice()),correct:item[2]})),
+  acr: shuffle(ACR_BANK.slice()).map(item=>({q:item[0],choices:shuffle(item[1].slice()),answer:item[2]})),
+  ismid: shuffle(ISM_ID_BANK.slice()),
+  ismmcq: shuffle(ISM_MCQ_BANK.slice()).map(item=>({q:item[0],choices:shuffle(item[1].slice()),answer:item[2]}))
+};
+
+const SECTIONS=[
+  {key:"id",title:"Test I — Identification",sub:"Identify the term being described. Write your answer in the box.",count:state.id.length},
+  {key:"mcq",title:"Test II — Multiple Choice",sub:"Choose the letter of the best answer.",count:state.mcq.length},
+  {key:"fib",title:"Test III — Fill in the Blank",sub:"Complete each sentence with the correct word or phrase.",count:state.fib.length},
+  {key:"enum",title:"Test IV — Enumeration",sub:"Check all options that correctly answer each prompt.",count:state.enum.length},
+  {key:"acr",title:"Test V — Acronyms",sub:"Choose what each acronym or abbreviation stands for.",count:state.acr.length},
+  {key:"isms",title:"Test VI — Isms of Education",sub:"Identify the -ism, or choose the best answer about its proponents and examples.",count:state.ismid.length+state.ismmcq.length}
+];
+
+let currentPage=0;
+let submitted=false;
+
+/* ================= RENDER ================= */
+const pagesEl=document.getElementById("pages");
+const dotsEl=document.getElementById("progressDots");
+
+function buildPages(){
+  pagesEl.innerHTML="";
+  dotsEl.innerHTML="";
+  SECTIONS.forEach((sec,pi)=>{
+    const div=document.createElement("div");
+    div.className="page"+(pi===0?" visible":"");
+    div.id="page-"+pi;
+    let html=`<div class="section-title">${sec.title}</div><div class="section-sub">${sec.sub} (${sec.count} items)</div>`;
+
+    if(sec.key==="id"){
+      state.id.forEach((item,i)=>{
+        html+=`<div class="q" id="q-id-${i}"><div class="qtext"><span class="num">${i+1}.</span>${item[0]}</div><input type="text" data-sec="id" data-i="${i}" placeholder="Your answer"><div class="correction" id="corr-id-${i}"></div></div>`;
+      });
+    } else if(sec.key==="mcq"){
+      state.mcq.forEach((item,i)=>{
+        html+=`<div class="q" id="q-mcq-${i}"><div class="qtext"><span class="num">${i+1}.</span>${item.q}</div>`;
+        const letters=["A","B","C","D"];
+        item.choices.forEach((c,ci)=>{
+          html+=`<label class="opt" id="opt-mcq-${i}-${ci}"><input type="radio" name="mcq-${i}" value="${c.replace(/"/g,'&quot;')}" data-sec="mcq" data-i="${i}"> <span>${letters[ci]}. ${c}</span></label>`;
+        });
+        html+=`<div class="correction" id="corr-mcq-${i}"></div></div>`;
+      });
+    } else if(sec.key==="fib"){
+      state.fib.forEach((item,i)=>{
+        html+=`<div class="q" id="q-fib-${i}"><div class="qtext"><span class="num">${i+1}.</span>${item[0]}</div><input type="text" data-sec="fib" data-i="${i}" placeholder="Your answer"><div class="correction" id="corr-fib-${i}"></div></div>`;
+      });
+    } else if(sec.key==="enum"){
+      state.enum.forEach((item,i)=>{
+        html+=`<div class="q" id="q-enum-${i}"><div class="qtext"><span class="num">${i+1}.</span>${item.q}</div>`;
+        item.options.forEach((o,oi)=>{
+          html+=`<label class="opt" id="opt-enum-${i}-${oi}"><input type="checkbox" value="${o.replace(/"/g,'&quot;')}" data-sec="enum" data-i="${i}"> <span>${o}</span></label>`;
+        });
+        html+=`<div class="correction" id="corr-enum-${i}"></div></div>`;
+      });
+    } else if(sec.key==="acr"){
+      state.acr.forEach((item,i)=>{
+        html+=`<div class="q" id="q-acr-${i}"><div class="qtext"><span class="num">${i+1}.</span>${item.q}</div>`;
+        const letters=["A","B","C","D"];
+        item.choices.forEach((c,ci)=>{
+          html+=`<label class="opt" id="opt-acr-${i}-${ci}"><input type="radio" name="acr-${i}" value="${c.replace(/"/g,'&quot;')}" data-sec="acr" data-i="${i}"> <span>${letters[ci]}. ${c}</span></label>`;
+        });
+        html+=`<div class="correction" id="corr-acr-${i}"></div></div>`;
+      });
+    } else if(sec.key==="isms"){
+      let n=0;
+      state.ismid.forEach((item,i)=>{
+        n++;
+        html+=`<div class="q" id="q-ismid-${i}"><div class="qtext"><span class="num">${n}.</span>${item[0]}</div><input type="text" data-sec="ismid" data-i="${i}" placeholder="Your answer"><div class="correction" id="corr-ismid-${i}"></div></div>`;
+      });
+      state.ismmcq.forEach((item,i)=>{
+        n++;
+        html+=`<div class="q" id="q-ismmcq-${i}"><div class="qtext"><span class="num">${n}.</span>${item.q}</div>`;
+        const letters=["A","B","C","D"];
+        item.choices.forEach((c,ci)=>{
+          html+=`<label class="opt" id="opt-ismmcq-${i}-${ci}"><input type="radio" name="ismmcq-${i}" value="${c.replace(/"/g,'&quot;')}" data-sec="ismmcq" data-i="${i}"> <span>${letters[ci]}. ${c}</span></label>`;
+        });
+        html+=`<div class="correction" id="corr-ismmcq-${i}"></div></div>`;
+      });
+    }
+    div.innerHTML=html;
+    pagesEl.appendChild(div);
+
+    const dot=document.createElement("div");
+    dot.className="dot"+(pi===0?" active":"");
+    dot.id="dot-"+pi;
+    dotsEl.appendChild(dot);
+  });
+}
+
+function showPage(n){
+  document.querySelectorAll(".page").forEach((p,i)=>p.classList.toggle("visible",i===n));
+  document.querySelectorAll(".dot").forEach((d,i)=>d.classList.toggle("active",i===n));
+  currentPage=n;
+  document.getElementById("prevBtn").disabled=(n===0);
+  const isLast=(n===SECTIONS.length-1);
+  document.getElementById("nextBtn").style.display=isLast?"none":"inline-block";
+  document.getElementById("submitBtn").style.display=(isLast&&!submitted)?"inline-block":"none";
+  document.getElementById("pageCount").textContent="Page "+(n+1)+" of "+SECTIONS.length+" — "+SECTIONS[n].title;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.getElementById("prevBtn").addEventListener("click",()=>{if(currentPage>0)showPage(currentPage-1);});
+document.getElementById("nextBtn").addEventListener("click",()=>{if(currentPage<SECTIONS.length-1)showPage(currentPage+1);});
+
+/* ================= GRADING ================= */
+function gradeExam(){
+  submitted=true;
+  let totalScore=0, totalItems=0;
+  const bySection={};
+
+  // ID
+  let idCorrect=0;
+  state.id.forEach((item,i)=>{
+    const inputEl=document.querySelector(`input[data-sec="id"][data-i="${i}"]`);
+    const userVal=inputEl?inputEl.value:"";
+    const ok=norm(userVal)===norm(item[1]);
+    const box=document.getElementById("q-id-"+i);
+    box.classList.add(ok?"correct":"incorrect");
+    box.classList.add("answered");
+    if(!ok){
+      const c=document.getElementById("corr-id-"+i);
+      c.textContent="Correct answer: "+item[1];
+      c.classList.add("show");
+    }
+    if(ok)idCorrect++;
+  });
+  bySection["Test I — Identification"]=[idCorrect,state.id.length];
+  totalScore+=idCorrect; totalItems+=state.id.length;
+
+  // MCQ
+  let mcqCorrect=0;
+  state.mcq.forEach((item,i)=>{
+    const sel=document.querySelector(`input[name="mcq-${i}"]:checked`);
+    const userVal=sel?sel.value:null;
+    const ok=userVal===item.answer;
+    const box=document.getElementById("q-mcq-"+i);
+    box.classList.add(ok?"correct":"incorrect");
+    box.classList.add("answered");
+    item.choices.forEach((c,ci)=>{
+      const optEl=document.getElementById(`opt-mcq-${i}-${ci}`);
+      if(c===item.answer)optEl.classList.add("correctopt");
+      else if(c===userVal)optEl.classList.add("incorrectopt");
+    });
+    if(!ok){
+      const c=document.getElementById("corr-mcq-"+i);
+      c.textContent="Correct answer: "+item.answer;
+      c.classList.add("show");
+    }
+    if(ok)mcqCorrect++;
+  });
+  bySection["Test II — Multiple Choice"]=[mcqCorrect,state.mcq.length];
+  totalScore+=mcqCorrect; totalItems+=state.mcq.length;
+
+  // FIB
+  let fibCorrect=0;
+  state.fib.forEach((item,i)=>{
+    const inputEl=document.querySelector(`input[data-sec="fib"][data-i="${i}"]`);
+    const userVal=inputEl?inputEl.value:"";
+    const ok=norm(userVal)===norm(item[1]);
+    const box=document.getElementById("q-fib-"+i);
+    box.classList.add(ok?"correct":"incorrect");
+    box.classList.add("answered");
+    if(!ok){
+      const c=document.getElementById("corr-fib-"+i);
+      c.textContent="Correct answer: "+item[1];
+      c.classList.add("show");
+    }
+    if(ok)fibCorrect++;
+  });
+  bySection["Test III — Fill in the Blank"]=[fibCorrect,state.fib.length];
+  totalScore+=fibCorrect; totalItems+=state.fib.length;
+
+  // ENUM (partial credit disabled -> whole item correct only if exact set match)
+  let enumCorrect=0;
+  state.enum.forEach((item,i)=>{
+    const checks=document.querySelectorAll(`input[data-sec="enum"][data-i="${i}"]:checked`);
+    const userSet=Array.from(checks).map(c=>c.value);
+    const correctSet=item.correct;
+    const ok=userSet.length===correctSet.length && userSet.every(v=>correctSet.includes(v));
+    const box=document.getElementById("q-enum-"+i);
+    box.classList.add(ok?"correct":"incorrect");
+    box.classList.add("answered");
+    item.options.forEach((o,oi)=>{
+      const optEl=document.getElementById(`opt-enum-${i}-${oi}`);
+      if(correctSet.includes(o))optEl.classList.add("correctopt");
+      else if(userSet.includes(o))optEl.classList.add("incorrectopt");
+    });
+    if(!ok){
+      const c=document.getElementById("corr-enum-"+i);
+      c.textContent="Correct selections: "+correctSet.join(", ");
+      c.classList.add("show");
+    }
+    if(ok)enumCorrect++;
+  });
+  bySection["Test IV — Enumeration"]=[enumCorrect,state.enum.length];
+  totalScore+=enumCorrect; totalItems+=state.enum.length;
+
+  // ACR
+  let acrCorrect=0;
+  state.acr.forEach((item,i)=>{
+    const sel=document.querySelector(`input[name="acr-${i}"]:checked`);
+    const userVal=sel?sel.value:null;
+    const ok=userVal===item.answer;
+    const box=document.getElementById("q-acr-"+i);
+    box.classList.add(ok?"correct":"incorrect");
+    box.classList.add("answered");
+    item.choices.forEach((c,ci)=>{
+      const optEl=document.getElementById(`opt-acr-${i}-${ci}`);
+      if(c===item.answer)optEl.classList.add("correctopt");
+      else if(c===userVal)optEl.classList.add("incorrectopt");
+    });
+    if(!ok){
+      const c=document.getElementById("corr-acr-"+i);
+      c.textContent="Correct answer: "+item.answer;
+      c.classList.add("show");
+    }
+    if(ok)acrCorrect++;
+  });
+  bySection["Test V — Acronyms"]=[acrCorrect,state.acr.length];
+  totalScore+=acrCorrect; totalItems+=state.acr.length;
+
+  // ISMS (identification part)
+  let ismCorrect=0;
+  state.ismid.forEach((item,i)=>{
+    const inputEl=document.querySelector(`input[data-sec="ismid"][data-i="${i}"]`);
+    const userVal=inputEl?inputEl.value:"";
+    const ok=norm(userVal)===norm(item[1]);
+    const box=document.getElementById("q-ismid-"+i);
+    box.classList.add(ok?"correct":"incorrect");
+    box.classList.add("answered");
+    if(!ok){
+      const c=document.getElementById("corr-ismid-"+i);
+      c.textContent="Correct answer: "+item[1];
+      c.classList.add("show");
+    }
+    if(ok)ismCorrect++;
+  });
+  // ISMS (mcq part)
+  state.ismmcq.forEach((item,i)=>{
+    const sel=document.querySelector(`input[name="ismmcq-${i}"]:checked`);
+    const userVal=sel?sel.value:null;
+    const ok=userVal===item.answer;
+    const box=document.getElementById("q-ismmcq-"+i);
+    box.classList.add(ok?"correct":"incorrect");
+    box.classList.add("answered");
+    item.choices.forEach((c,ci)=>{
+      const optEl=document.getElementById(`opt-ismmcq-${i}-${ci}`);
+      if(c===item.answer)optEl.classList.add("correctopt");
+      else if(c===userVal)optEl.classList.add("incorrectopt");
+    });
+    if(!ok){
+      const c=document.getElementById("corr-ismmcq-"+i);
+      c.textContent="Correct answer: "+item.answer;
+      c.classList.add("show");
+    }
+    if(ok)ismCorrect++;
+  });
+  const ismTotal=state.ismid.length+state.ismmcq.length;
+  bySection["Test VI — Isms of Education"]=[ismCorrect,ismTotal];
+  totalScore+=ismCorrect; totalItems+=ismTotal;
+
+  // disable all inputs
+  document.querySelectorAll("input").forEach(inp=>inp.disabled=true);
+
+  // show summary
+  const summaryBox=document.getElementById("summaryBox");
+  document.getElementById("totalScore").textContent=totalScore+" / "+totalItems;
+  document.getElementById("totalPct").textContent=Math.round((totalScore/totalItems)*100)+"% overall";
+  const bd=document.getElementById("breakdown");
+  bd.innerHTML="";
+  Object.keys(bySection).forEach(k=>{
+    const [c,t]=bySection[k];
+    const row=document.createElement("div");
+    row.innerHTML=`${k} <span>${c} / ${t}</span>`;
+    bd.appendChild(row);
+  });
+  summaryBox.classList.add("visible");
+
+  // reveal all pages for review
+  document.querySelectorAll(".page").forEach(p=>p.classList.add("visible"));
+  document.getElementById("prevBtn").style.display="none";
+  document.getElementById("nextBtn").style.display="none";
+  document.getElementById("submitBtn").style.display="none";
+  document.getElementById("pageCount").textContent="Review — all pages shown below";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.getElementById("submitBtn").addEventListener("click",()=>{
+  if(confirm("Submit the full exam? You won't be able to change your answers after this.")){
+    gradeExam();
+  }
+});
+
+buildPages();
+showPage(0);
+</script>
+</body>
+</html>
